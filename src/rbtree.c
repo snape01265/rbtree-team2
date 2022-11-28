@@ -294,22 +294,20 @@ void rbtree_insert_fixup(const rbtree *t, node_t *z) {
 node_t *rbtree_find(const rbtree *t, const key_t key) {
 	if (!t || !(t->root)) {	//tree 구성 전
 		return NULL;
-	} 
-
-	node_t *temp = t->root;
-	while(temp != t->nil) {
-		if (key == t->root->key) {//찾았다!
-			return temp;
-		} else if (key < temp->key) {	//left branch로 진행
-			temp = temp->left;
-		} else {	// right branch 로 진행
-			temp = temp->right;
-		}
-	} 
-	// 끝까지 찾았는데 없었다! == temp = t->nil
-	return NULL;
-	
-    
+	} else {
+		node_t *temp = t->root;
+		while(temp != t->nil) {
+			if (key == temp->key) {//찾았다!
+				return temp;
+			} else if (key < temp->key) {	//left branch로 진행
+				temp = temp->left;
+			} else {	// right branch 로 진행
+				temp = temp->right;
+			}
+		} 
+		// 끝까지 찾았는데 없었다! ==> temp == t->nil
+		return NULL;
+	}
 }
 
 
@@ -322,7 +320,7 @@ node_t *rbtree_find(const rbtree *t, const key_t key) {
 */
 node_t *rbtree_min(const rbtree *t) {
 	node_t *temp = t->root;
-	while (temp != t->nil) {
+	while (temp->left != t->nil) {
 		temp = temp->left;
 	}
     return temp;
@@ -336,7 +334,7 @@ node_t *rbtree_min(const rbtree *t) {
 */
 node_t *rbtree_max(const rbtree *t) {
     node_t *temp = t->root;
-	while (temp != t->nil) {
+	while (temp->right != t->nil) {
 		temp = temp->right;
 	}
     return temp;
