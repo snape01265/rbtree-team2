@@ -9,23 +9,23 @@ typedef int key_t;
 
 
 /*
-  노드 구조체 
-  노드 색, value 값, 부모&자식 포인터 노드 로 구성됨 
+    노드 구조체 
+    노드 색, value 값, 부모&자식 포인터 노드 로 구성됨 
 */
 typedef struct node_t {
-  color_t color;
-  key_t key;
-  struct node_t *parent, *left, *right;
+	color_t color;
+	key_t key;
+	struct node_t *parent, *left, *right;
 } node_t;
 
 
 /*
-  rbtree 트리 구조체 
-  루트노드, NIL을 담당하는 sentinel 노드로 구성됨 
+	rbtree 트리 구조체 
+	루트노드, NIL을 담당하는 sentinel 노드로 구성됨 
 */
 typedef struct {
-  node_t *root;
-  node_t *nil;  // for sentinel
+	node_t *root;
+	node_t *nil;  // for sentinel
 } rbtree;
 
 rbtree *new_rbtree(void);
