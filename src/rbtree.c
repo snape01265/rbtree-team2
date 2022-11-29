@@ -10,7 +10,7 @@ void rbtree_insert_fixup(const rbtree *, node_t *);
 void transplant(rbtree *, node_t *, node_t *);
 node_t *find_right_min(rbtree *, node_t *);
 void erase_fixup(rbtree *, node_t *);
-
+int inorder(const rbtree *, const node_t *, key_t *, int, const size_t );
 
 /*
     FUNCTION : new    return : rbtree pointer
@@ -343,24 +343,40 @@ node_t *rbtree_max(const rbtree *t) {
 
 
 /*
-    FUNCTION : to_array   return : 0
+    FUNCTION : to_array   return : fail 0 / success 1
     RB tree의 내용을 key 순서대로 주어진 array로 변환
     array의 크기는 n으로 주어지며 tree의 크기가 n 보다 큰 경우에는 순서대로 n개 까지만 변환
     array의 메모리 공간은 이 함수를 부르는 쪽에서 준비하고 그 크기를 n으로 알려줍니다.
 */
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
-    // TODO: implement to_array
-    return 0;
+    if (inorder(t, t->root, arr, 0, n) > 0) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
+int inorder(const rbtree *t, const node_t *np, key_t *arr, int index, const size_t n) {
+	if (np == t->nil) {
+		return index;
+	} else if (index == n) {
+		return index;
+	}
 
+	index = inorder(t, np->left, arr, index, n);
+	*(arr + index) = np->key;
+	index += 1;
+	index = inorder(t, np->right, arr, index, n);
+	
+	return index;
+}
 
 
 
 //++++++++++++++++++++++++삭제 구현++++++++++++++++++++++++++++++
 
 /*
-    FUNCTION : transplant   return : ??
+    FUNCTION : transplant   return : void
     v의 subtree를 u에 옮겨심는다 
 	v가 NIL node이더라도 v parent을 찾을 수 있다 
 	
@@ -560,15 +576,3 @@ void erase_fixup(rbtree *t, node_t *x) {
 		모든 색 변환 후 부모를 기준으로 회전 
 */
 
-
-
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// int main() {
-// 	rbtree *treePointer = new_rbtree();
-// 	treePointer->root = 
-
-	
-// 	delete_rbtree(treePointer);
-// 	return 0;
-// }
