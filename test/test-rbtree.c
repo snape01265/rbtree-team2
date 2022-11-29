@@ -374,10 +374,10 @@ int main(void) {
     test_erase_root(128);
     test_find_erase_fixed();
     test_minmax_suite();
-    // test_to_array_suite(); // TODO
+    test_to_array_suite();
     test_distinct_values();
     test_duplicate_values();
-    // test_multi_instance(); // TODO
+    test_multi_instance();
     test_find_erase_rand(10000, 17);
     printf("Passed all tests!\n");
 }
