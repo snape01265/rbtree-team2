@@ -4,16 +4,21 @@
 
 rbtree *new_rbtree(void) 
 {
-  rbtree *t = (rbtree *)calloc(1, sizeof(rbtree));
-  node_t *NIL = (node_t *)calloc(1, sizeof(node_t));
-    NIL->parent = NULL;
-    NIL->left = NULL;
-    NIL->right = NULL;
-    NIL->key = 0;
-    NIL->color = RBTREE_BLACK;;
-    t->nil = NIL;
-    t->root = NIL;
+  rbtree *t = (rbtree *)malloc(sizeof(rbtree));
+  t->nil = new_node(RBTREE_BLACK, 0);
+  t->root = t->nil;
   return t;
+}
+
+node_t *new_node(color_t color, key_t key)
+{
+  node_t *NIL = (node_t*)malloc(sizeof(node_t));
+  NIL->key = key;
+  NIL->color = color;
+  NIL->parent = NULL;
+  NIL->left = NULL;
+  NIL->right = NULL;
+  return NIL;
 }
 
 void delete_node(rbtree* t, node_t* n)
@@ -114,7 +119,7 @@ void rbtree_insert_fixup(rbtree *t, node_t *z)
           l_rotate(t, z);
         }
         z->parent->color = RBTREE_BLACK;
-        z->parent->parent = RBTREE_RED;
+        z->parent->parent->color = RBTREE_RED;
         r_rotate(t, z->parent->parent);
       }
     }
@@ -136,7 +141,7 @@ void rbtree_insert_fixup(rbtree *t, node_t *z)
           r_rotate(t, z);
         }
         z->parent->color = RBTREE_BLACK;
-        z->parent->parent = RBTREE_RED;
+        z->parent->parent->color = RBTREE_RED;
         l_rotate(t, z->parent->parent);
       }
     }
@@ -146,7 +151,7 @@ void rbtree_insert_fixup(rbtree *t, node_t *z)
 
 node_t *rbtree_insert(rbtree *t, const key_t key) 
 {
-  node_t *z = (node_t *)calloc(1, sizeof(node_t));
+  node_t *z = new_node(RBTREE_RED, key);
   node_t *y = t->nil;
   node_t *x = t->root;
 
@@ -227,7 +232,7 @@ node_t *rbtree_subtree_min(const rbtree *t, node_t* z)
 {
   node_t* min_node;
 
-  while (z->left != t->nil)
+  while (z != t->nil)
   {
     min_node = z;
     z = z->left;
@@ -255,12 +260,13 @@ void rbtree_transplant(rbtree *t, node_t *u, node_t *v)
 
 void rbtree_erase_fixup(rbtree *t, node_t *x)
 {
+  node_t* w;
   while (x != t->root && x->color == RBTREE_BLACK)
   {
     if (x == x->parent->left)
     {
-      node_t* w = x->parent->right;
-      if (w->color = RBTREE_RED)
+       w = x->parent->right;
+      if (w->color == RBTREE_RED)
       {
         w->color = RBTREE_BLACK;
         x->parent->color = RBTREE_RED;
@@ -276,8 +282,8 @@ void rbtree_erase_fixup(rbtree *t, node_t *x)
       {
         if (w->right->color == RBTREE_BLACK)
         {
-          w->left->color == RBTREE_BLACK;
-          w->color == RBTREE_RED;
+          w->left->color = RBTREE_BLACK;
+          w->color = RBTREE_RED;
           r_rotate(t, w);
           w = x->parent->right;
         }
@@ -290,8 +296,8 @@ void rbtree_erase_fixup(rbtree *t, node_t *x)
     }
     else
     {
-      node_t* w = x->parent->left;
-      if (w->color = RBTREE_RED)
+      w = x->parent->left;
+      if (w->color == RBTREE_RED)
       {
         w->color = RBTREE_BLACK;
         x->parent->color = RBTREE_RED;
@@ -307,8 +313,8 @@ void rbtree_erase_fixup(rbtree *t, node_t *x)
       {
         if (w->left->color == RBTREE_BLACK)
         {
-          w->right->color == RBTREE_BLACK;
-          w->color == RBTREE_RED;
+          w->right->color = RBTREE_BLACK;
+          w->color = RBTREE_RED;
           l_rotate(t, w);
           w = x->parent->left;
         }
@@ -319,15 +325,15 @@ void rbtree_erase_fixup(rbtree *t, node_t *x)
         x = t->root;
       }
     }
-  x->color = RBTREE_BLACK;
   }
+  x->color = RBTREE_BLACK;
 }
 
-int rbtree_erase(rbtree *t, node_t *z) 
+void rbtree_erase(rbtree *t, node_t *z) 
 {
   node_t* y = z;
   node_t* x;
-  color_t* y_original_color = y->color;
+  color_t y_original_color = y->color;
   if (z->left == t->nil)
   {
     x = z->right;
@@ -356,7 +362,7 @@ int rbtree_erase(rbtree *t, node_t *z)
     rbtree_transplant(t, z, y);
     y->left = z->left;
     y->left->parent = y;
-    y->color = z->color
+    y->color = z->color;
   }
   if (y_original_color == RBTREE_BLACK)
   {
@@ -372,9 +378,9 @@ int preorder_array(const rbtree* t, node_t* node, key_t *arr, int i)
     return i;
   }
 
-  i = preorder_array(t, n->left, arr, i);
-  arr[i++] = n->key;
-  i = preorder_array(t, n->right, arr, i);
+  i = preorder_array(t, node->left, arr, i);
+  arr[i++] = node->key;
+  i = preorder_array(t, node->right, arr, i);
   return i;
 }
 
